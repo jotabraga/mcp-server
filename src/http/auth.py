@@ -12,11 +12,15 @@ from starlette.responses import JSONResponse
 
 
 class BearerAuthMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, api_key: str):
+    def __init__(self, app, api_key: str, exempt_paths: frozenset[str] = frozenset()):
         super().__init__(app)
         self._api_key = api_key
+        # Paths that must stay open (e.g. k8s liveness/readiness probes send no token).
+        self._exempt_paths = exempt_paths
 
     async def dispatch(self, request: Request, call_next):
+        if request.url.path in self._exempt_paths:
+            return await call_next(request)
         provided = self._extract_bearer(request)
         if provided is None or not self._matches(provided):
             return JSONResponse({"error": "unauthorized"}, status_code=401)

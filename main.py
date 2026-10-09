@@ -50,6 +50,11 @@ async def handle_list_tools(request: Request) -> JSONResponse:
     )
 
 
+async def handle_health(request: Request) -> JSONResponse:
+    # Unauthenticated by design: used by k8s liveness/readiness probes.
+    return JSONResponse({"status": "ok"})
+
+
 def create_app() -> Starlette:
     load_dotenv()
     settings = load_settings(require_http_auth=True)
@@ -75,6 +80,7 @@ def create_app() -> Starlette:
 
     app = Starlette(
         routes=[
+            Route("/healthz", handle_health, methods=["GET"]),
             Route("/invoke", handle_invoke, methods=["POST"]),
             Route("/tools", handle_list_tools, methods=["GET"]),
             Route("/tools/{tool_name}", handle_get_tool, methods=["GET"]),
@@ -83,6 +89,10 @@ def create_app() -> Starlette:
         ],
         lifespan=lifespan,
     )
-    # Single middleware guards every route above, including /sse and /messages.
-    app.add_middleware(BearerAuthMiddleware, api_key=settings.mcp_api_key)
+    # Single middleware guards every route except the health probe.
+    app.add_middleware(
+        BearerAuthMiddleware,
+        api_key=settings.mcp_api_key,
+        exempt_paths=frozenset({"/healthz"}),
+    )
     return app

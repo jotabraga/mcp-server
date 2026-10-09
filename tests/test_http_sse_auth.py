@@ -28,3 +28,10 @@ def test_invoke_requires_authentication():
     client = TestClient(_app())
     resp = client.post("/invoke", json={"tool": "echo", "arguments": {"message": "x"}})
     assert resp.status_code == 401
+
+
+def test_health_is_reachable_without_authentication():
+    client = TestClient(_app())
+    resp = client.get("/healthz")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok"}
