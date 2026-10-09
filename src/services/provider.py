@@ -18,6 +18,7 @@ from src.services.ia_service import IaService
 from src.services.kb_files_service import KBFilesService
 from src.services.keycloak import Keycloak
 from src.services.qdrant_service import QdrantService
+from src.services.redis_service import RedisService
 from src.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ class ServiceProvider:
         self._ia_service: Optional[IaService] = None
         self._qdrant: Optional[QdrantService] = None
         self._kb_files: Optional[KBFilesService] = None
+        self._redis: Optional[RedisService] = None
 
     @property
     def keycloak(self) -> Keycloak:
@@ -77,3 +79,11 @@ class ServiceProvider:
                 s.github_app_private_key,
             )
         return self._kb_files
+
+    @property
+    def redis(self) -> RedisService:
+        if self._redis is None:
+            s = self._settings
+            logger.info("Building RedisService (lazy)")
+            self._redis = RedisService(s.redis_host, s.redis_port, s.redis_db)
+        return self._redis
