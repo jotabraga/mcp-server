@@ -40,6 +40,7 @@ def test_service_provider_construction_is_cheap():
         qdrant_host=None, qdrant_port=None, qdrant_api_key=None,
         qdrant_collection_name="knowledge-base",
         github_app_private_key=None, github_app_id=None, github_app_installation_id=None,
+        redis_host="localhost", redis_port=6379, redis_db=0,
     )
     provider = ServiceProvider(settings)
     assert provider._keycloak is None  # nothing built yet
