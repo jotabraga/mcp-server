@@ -1,6 +1,6 @@
 """Single place that configures logging. Call `configure_logging()` once from an entrypoint.
 
-The original lia-mcp-server called logging.basicConfig in nearly every module; only the first
+The original server called logging.basicConfig in nearly every module; only the first
 call wins and the rest are silent no-ops. Centralizing avoids that confusion.
 """
 import logging

@@ -1,7 +1,7 @@
 # MCP Server — Checklist de Implementação
 
 Novo MCP server construído desde o início com as 5 melhorias identificadas na análise do
-`lia-mcp-server`. Cada melhoria vira um bloco abaixo. Marcar `[x]` conforme concluído.
+servidor de origem. Cada melhoria vira um bloco abaixo. Marcar `[x]` conforme concluído.
 
 Princípio norteador: só construir o que é necessário, reusar stdlib/libs já presentes, e deixar
 cada peça de lógica não-trivial com pelo menos um teste que falha se ela quebrar.
@@ -69,6 +69,10 @@ cada peça de lógica não-trivial com pelo menos um teste que falha se ela queb
 - [x] README atualizado
 
 ## Pendências conhecidas (fase futura)
-- Portar os tools reais do `lia-mcp-server` (vector search, canvas, routines, code interpreter, ...)
+- Portar os tools de knowledge base (vector search no Qdrant, leitura de arquivo via GitHub)
+- Portar canvas e routines (dependem da API de origem)
 - Backend Redis opcional para o cache de token entre réplicas
 - Instanciar vector DB / embedding no `lifespan` quando o tool de busca for portado
+
+## Tools portados
+- `search_web`, `read_webpage` (sem infra), `fetch_skill` (via IaService injetado)
