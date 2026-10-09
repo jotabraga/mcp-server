@@ -1,0 +1,52 @@
+"""Centralized configuration.
+
+Reading os.environ is isolated here so the rest of the code depends on a typed object, and
+so a missing required variable fails early with a clear message instead of surfacing as a
+confusing error deep inside a request. Importing this module has no side effects; call
+`load_settings()` explicitly at startup.
+"""
+import os
+from dataclasses import dataclass
+from typing import Optional
+
+
+class SettingsError(RuntimeError):
+    """Raised when required configuration is missing or invalid."""
+
+
+@dataclass(frozen=True)
+class Settings:
+    # HTTP auth: the shared secret clients must present as a bearer token.
+    mcp_api_key: str
+    log_level: str
+    # Keycloak (optional at boot; only required by tools that make authenticated calls).
+    keycloak_api_host: Optional[str]
+    keycloak_client_id: Optional[str]
+    keycloak_client_secret: Optional[str]
+
+
+def load_settings(require_http_auth: bool = True) -> Settings:
+    """Build Settings from the environment, failing fast on missing required values.
+
+    `require_http_auth` is True for the HTTP entrypoint (an unauthenticated HTTP server is
+    the main security risk we are closing) and can be False for the stdio entrypoint, which
+    is not network-exposed.
+    """
+    missing: list[str] = []
+
+    mcp_api_key = os.getenv("MCP_API_KEY", "")
+    if require_http_auth and not mcp_api_key:
+        missing.append("MCP_API_KEY")
+
+    if missing:
+        raise SettingsError(
+            "Missing required environment variables: " + ", ".join(missing)
+        )
+
+    return Settings(
+        mcp_api_key=mcp_api_key,
+        log_level=os.getenv("LOG_LEVEL", "INFO"),
+        keycloak_api_host=os.getenv("KEYCLOAK_API_HOST") or None,
+        keycloak_client_id=os.getenv("KEYCLOAK_CLIENT_ID") or None,
+        keycloak_client_secret=os.getenv("KEYCLOAK_CLIENT_SECRET") or None,
+    )
