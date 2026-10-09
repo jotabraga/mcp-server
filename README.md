@@ -1,8 +1,7 @@
 # MCP Server
 
 MCP server with a centralized tool dispatcher, authenticated HTTP transport, and validated
-configuration. Rebuilt from `lia-mcp-server` to address five improvement areas (see
-`CHECKLIST.md`).
+configuration.
 
 ## Key design points
 
