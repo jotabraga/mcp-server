@@ -23,6 +23,8 @@ class Settings:
     keycloak_api_host: Optional[str]
     keycloak_client_id: Optional[str]
     keycloak_client_secret: Optional[str]
+    # Downstream APIs.
+    ia_api_host: Optional[str]
 
 
 def load_settings(require_http_auth: bool = True) -> Settings:
@@ -49,4 +51,5 @@ def load_settings(require_http_auth: bool = True) -> Settings:
         keycloak_api_host=os.getenv("KEYCLOAK_API_HOST") or None,
         keycloak_client_id=os.getenv("KEYCLOAK_CLIENT_ID") or None,
         keycloak_client_secret=os.getenv("KEYCLOAK_CLIENT_SECRET") or None,
+        ia_api_host=os.getenv("IA_API_HOST") or None,
     )

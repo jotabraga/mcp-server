@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+from src.services.ia_service import IaService
 from src.services.keycloak import Keycloak
 from src.settings import Settings
 
@@ -24,6 +25,7 @@ class ServiceProvider:
     def __init__(self, settings: Settings):
         self._settings = settings
         self._keycloak: Optional[Keycloak] = None
+        self._ia_service: Optional[IaService] = None
 
     @property
     def keycloak(self) -> Keycloak:
@@ -36,3 +38,12 @@ class ServiceProvider:
                 s.keycloak_api_host, s.keycloak_client_id, s.keycloak_client_secret
             )
         return self._keycloak
+
+    @property
+    def ia_service(self) -> IaService:
+        if self._ia_service is None:
+            if not self._settings.ia_api_host:
+                raise RuntimeError("IA_API_HOST is not configured")
+            logger.info("Building IaService (lazy)")
+            self._ia_service = IaService(self._settings.ia_api_host, self.keycloak)
+        return self._ia_service
