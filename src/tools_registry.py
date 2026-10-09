@@ -8,7 +8,9 @@ from typing import Dict
 from src.models.tool_interface import BaseTool
 from src.tools.echo import EchoTool
 from src.tools.fetch_skill import FetchSkillTool
+from src.tools.read_knowledge_base_file import ReadKnowledgeBaseFileTool
 from src.tools.read_webpage import ReadWebpageTool
+from src.tools.search_knowledge_base import SearchKnowledgeBaseTool
 from src.tools.search_web import SearchWebTool
 from src.tools.whoami import WhoAmITool
 
@@ -18,6 +20,8 @@ _TOOL_INSTANCES = [
     SearchWebTool(),
     ReadWebpageTool(),
     FetchSkillTool(),
+    SearchKnowledgeBaseTool(),
+    ReadKnowledgeBaseFileTool(),
 ]
 
 TOOLS: Dict[str, BaseTool] = {
