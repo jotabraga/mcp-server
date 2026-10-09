@@ -12,6 +12,9 @@ starlette = "^0.41.0"
 uvicorn = { extras = ["standard"], version = "^0.41.0" }
 python-dotenv = "^1.0.0"
 requests = "^2.31.0"
+beautifulsoup4 = "^4.12.2"
+html2text = "^2025.4.15"
+ddgs = "^9.6.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
