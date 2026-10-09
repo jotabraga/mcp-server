@@ -69,10 +69,9 @@ cada peça de lógica não-trivial com pelo menos um teste que falha se ela queb
 - [x] README atualizado
 
 ## Pendências conhecidas (fase futura)
-- Portar os tools de knowledge base (vector search no Qdrant, leitura de arquivo via GitHub)
 - Portar canvas e routines (dependem da API de origem)
 - Backend Redis opcional para o cache de token entre réplicas
-- Instanciar vector DB / embedding no `lifespan` quando o tool de busca for portado
 
 ## Tools portados
 - `search_web`, `read_webpage` (sem infra), `fetch_skill` (via IaService injetado)
+- `search_knowledge_base` (Qdrant lazy no provider), `read_knowledge_base_file` (GitHub lazy no provider)
