@@ -34,6 +34,10 @@ class Settings:
     github_app_private_key: Optional[str]
     github_app_id: Optional[str]
     github_app_installation_id: Optional[str]
+    # Redis (shared cache: canvas state, optional token cache backend).
+    redis_host: str
+    redis_port: int
+    redis_db: int
 
 
 def load_settings(require_http_auth: bool = True) -> Settings:
@@ -68,4 +72,7 @@ def load_settings(require_http_auth: bool = True) -> Settings:
         github_app_private_key=os.getenv("GITHUB_APP_PRIVATE_KEY") or None,
         github_app_id=os.getenv("GITHUB_APP_ID") or None,
         github_app_installation_id=os.getenv("GITHUB_APP_INSTALLATION_ID") or None,
+        redis_host=os.getenv("REDIS_HOST", "localhost"),
+        redis_port=int(os.getenv("REDIS_PORT", "6379")),
+        redis_db=int(os.getenv("REDIS_DB", "0")),
     )

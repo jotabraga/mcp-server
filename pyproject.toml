@@ -18,6 +18,7 @@ ddgs = "^9.6.0"
 qdrant-client = "^1.15.1"
 fastembed = "^0.7.3"
 pygithub = "^2.8.1"
+redis = "^5.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
