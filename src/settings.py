@@ -25,6 +25,15 @@ class Settings:
     keycloak_client_secret: Optional[str]
     # Downstream APIs.
     ia_api_host: Optional[str]
+    # Vector DB (knowledge base search).
+    qdrant_host: Optional[str]
+    qdrant_port: Optional[str]
+    qdrant_api_key: Optional[str]
+    qdrant_collection_name: str
+    # GitHub app private key for reading knowledge-base files.
+    github_app_private_key: Optional[str]
+    github_app_id: Optional[str]
+    github_app_installation_id: Optional[str]
 
 
 def load_settings(require_http_auth: bool = True) -> Settings:
@@ -52,4 +61,11 @@ def load_settings(require_http_auth: bool = True) -> Settings:
         keycloak_client_id=os.getenv("KEYCLOAK_CLIENT_ID") or None,
         keycloak_client_secret=os.getenv("KEYCLOAK_CLIENT_SECRET") or None,
         ia_api_host=os.getenv("IA_API_HOST") or None,
+        qdrant_host=os.getenv("QDRANT_HOST") or None,
+        qdrant_port=os.getenv("QDRANT_PORT") or None,
+        qdrant_api_key=os.getenv("QDRANT_API_KEY") or None,
+        qdrant_collection_name=os.getenv("QDRANT_COLLECTION_NAME", "knowledge-base"),
+        github_app_private_key=os.getenv("GITHUB_APP_PRIVATE_KEY") or None,
+        github_app_id=os.getenv("GITHUB_APP_ID") or None,
+        github_app_installation_id=os.getenv("GITHUB_APP_INSTALLATION_ID") or None,
     )

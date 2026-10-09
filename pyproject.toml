@@ -15,6 +15,9 @@ requests = "^2.31.0"
 beautifulsoup4 = "^4.12.2"
 html2text = "^2025.4.15"
 ddgs = "^9.6.0"
+qdrant-client = "^1.15.1"
+fastembed = "^0.7.3"
+pygithub = "^2.8.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
