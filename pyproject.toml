@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "mcp-server"
+version = "0.1.0"
+description = "MCP server with centralized dispatch, HTTP authentication and validated config"
+authors = ["Pier Cloud Engineering <engineering@piercloud.com.br>"]
+packages = [{ include = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+mcp = "^1.26.0"
+starlette = "^0.41.0"
+uvicorn = { extras = ["standard"], version = "^0.41.0" }
+python-dotenv = "^1.0.0"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+respx = "^0.21.1"
+httpx = "^0.27.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-ra"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
