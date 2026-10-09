@@ -7,9 +7,11 @@ from typing import Dict
 
 from src.models.tool_interface import BaseTool
 from src.tools.echo import EchoTool
+from src.tools.whoami import WhoAmITool
 
 _TOOL_INSTANCES = [
     EchoTool(),
+    WhoAmITool(),
 ]
 
 TOOLS: Dict[str, BaseTool] = {
