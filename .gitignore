@@ -7,3 +7,6 @@ venv/
 *.egg-info/
 dist/
 build/
+
+# Generated k8s manifest
+deployment.yaml
