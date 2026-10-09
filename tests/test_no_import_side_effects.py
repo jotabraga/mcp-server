@@ -16,7 +16,7 @@ def test_entrypoints_import_without_side_effects():
     env = {
         k: v
         for k, v in os.environ.items()
-        if not k.startswith(("MCP_", "KEYCLOAK_", "QDRANT_", "REDIS_", "LOG_"))
+        if not k.startswith(("MCP_", "KEYCLOAK_", "QDRANT_", "REDIS_", "LOG_", "IA_"))
     }
     result = subprocess.run(
         [sys.executable, "-c", code],
@@ -36,6 +36,7 @@ def test_service_provider_construction_is_cheap():
     settings = Settings(
         mcp_api_key="k", log_level="INFO",
         keycloak_api_host=None, keycloak_client_id=None, keycloak_client_secret=None,
+        ia_api_host=None,
     )
     provider = ServiceProvider(settings)
     assert provider._keycloak is None  # nothing built yet
