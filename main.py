@@ -1,21 +1,25 @@
 """HTTP entrypoint.
 
 Thin transport layer: it authenticates, parses the request, and delegates to the shared
-`execute_tool`. No tool logic lives here. Heavy services (if any) are created in the
-lifespan, never at import time, so importing this module has no side effects.
+`execute_tool` (or the shared MCP Server for SSE). No tool logic lives here. Heavy services
+are created in the lifespan via the service provider, never at import time, so importing this
+module has no side effects.
 """
 import contextlib
 import logging
 
 from dotenv import load_dotenv
+from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse
-from starlette.routing import Route
+from starlette.responses import JSONResponse, Response
+from starlette.routing import Mount, Route
 
 from src.dispatch import execute_tool
 from src.http.auth import BearerAuthMiddleware
 from src.logging_config import configure_logging
+from src.mcp_app import build_mcp_server
+from src.services.provider import ServiceProvider
 from src.settings import load_settings
 from src.tools_registry import TOOLS
 
@@ -27,7 +31,8 @@ async def handle_invoke(request: Request) -> JSONResponse:
     tool_name = data.get("tool")
     if not tool_name:
         return JSONResponse({"error": "Tool name is required"}, status_code=400)
-    result = execute_tool(tool_name, data.get("arguments", {}))
+    services = getattr(request.app.state, "services", None)
+    result = execute_tool(tool_name, data.get("arguments", {}), services=services)
     return JSONResponse({"response": result})
 
 
@@ -50,18 +55,34 @@ def create_app() -> Starlette:
     settings = load_settings(require_http_auth=True)
     configure_logging(settings.log_level)
 
+    mcp_server = build_mcp_server()
+    sse = SseServerTransport("/messages/")
+
+    async def handle_sse(request: Request) -> Response:
+        async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
+            await mcp_server.run(
+                streams[0], streams[1], mcp_server.create_initialization_options()
+            )
+        return Response()
+
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
+        # Heavy services (vector DB, embedding models, ...) are built here, never at import.
+        app.state.services = ServiceProvider(settings)
         logger.info("MCP HTTP server starting with %d tools", len(TOOLS))
         yield
+        app.state.services = None
 
     app = Starlette(
         routes=[
             Route("/invoke", handle_invoke, methods=["POST"]),
             Route("/tools", handle_list_tools, methods=["GET"]),
             Route("/tools/{tool_name}", handle_get_tool, methods=["GET"]),
+            Route("/sse", handle_sse, methods=["GET"]),
+            Mount("/messages", app=sse.handle_post_message),
         ],
         lifespan=lifespan,
     )
+    # Single middleware guards every route above, including /sse and /messages.
     app.add_middleware(BearerAuthMiddleware, api_key=settings.mcp_api_key)
     return app

@@ -1,33 +1,21 @@
 """stdio entrypoint for MCP clients.
 
 Not network-exposed, so HTTP auth is not required here. Tool logic is shared via
-`execute_tool`, keeping stdio and HTTP behaviour identical.
+`execute_tool`, and the MCP Server is built by the shared factory, keeping stdio and SSE
+behaviour identical.
 """
 import asyncio
 import logging
 
 from dotenv import load_dotenv
-from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import TextContent, Tool
 
-from src.dispatch import execute_tool
 from src.logging_config import configure_logging
+from src.mcp_app import build_mcp_server
 from src.settings import load_settings
-from src.tools_registry import TOOLS
 
 logger = logging.getLogger(__name__)
-app = Server("mcp-server")
-
-
-@app.list_tools()
-async def list_tools() -> list[Tool]:
-    return [tool.get_tool_input_schema() for tool in TOOLS.values()]
-
-
-@app.call_tool()
-async def call_tool(name: str, arguments: dict) -> list[TextContent]:
-    return [TextContent(type="text", text=execute_tool(name, arguments))]
+app = build_mcp_server()
 
 
 async def main() -> None:
